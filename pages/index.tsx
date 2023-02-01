@@ -1,41 +1,18 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
-import { throttle } from 'lodash';
-import YouTube from 'react-youtube';
+
+import YouTube, { YouTubeProps } from 'react-youtube';
 
 export default function Home() {
-  const [width, setWidth] = useState(280);
-  const [opts, setOpts] = useState({
-    width: '240',
-    height: '135',
-    playerVars: {
-      // https://developers.google.com/youtube/player_parameters
-      autoplay: 1,
-    },
-  });
+  const opts: YouTubeProps['opts'] = {
+    width: '480',
+    height: '270'
+  };
 
-  useEffect(() => {
-    const handleResize = () => setWidth(window.innerWidth);
-    handleResize();
-    window.addEventListener('resize', throttle(handleResize, 500));
-    // eslint-disable-next-line
-  }, []);
-
-  useEffect(() => {
-    if (width < 280) {
-      setOpts({ ...opts, width: '240', height: '135' });
-    } else if (width < 1024) {
-      setOpts({
-        ...opts,
-        width: `${width - 40}`,
-        height: `${((width - 40) / 16) * 9}`,
-      });
-    } else {
-      setOpts({ ...opts, width: '984', height: '554' });
-    }
-    // eslint-disable-next-line
-  }, [width]);
+  const onReady: YouTubeProps['onReady'] = (e) => {
+    console.log(e.target);
+  };
 
   const onStateChange = (e: { target: any; data: number }) => {
     const type = e.data;
@@ -57,10 +34,12 @@ export default function Home() {
       <div>
         <p>개발시작</p>
       </div>
+
       <YouTube
         id='player'
         videoId='2g811Eo7K8U'
         opts={opts}
+        onReady={onReady}
         onStateChange={onStateChange}
       />
     </>
