@@ -4,19 +4,47 @@ import Image from 'next/image';
 
 import YouTube, { YouTubeProps } from 'react-youtube';
 
+type Item = {
+  id: string;
+  from: string;
+};
+
 export default function Home() {
+  const [queue, setQueue] = useState<Item[]>([
+    { id: 'HoSQqadfiag', from: 'streamer' },
+    { id: 'oKCQJ8w5e3E', from: 'streamer' },
+    { id: 'pnxYMsBdyxo', from: 'streamer' },
+    { id: 'b12-WUgXAzg', from: 'streamer' },
+  ]);
+
+  const [prev, setPrev] = useState<Item[]>([]);
+
+  const [list, setList] = useState<Item[]>([...prev, ...queue]);
+
   const opts: YouTubeProps['opts'] = {
     width: '480',
-    height: '270'
+    height: '270',
+    playerVars: {
+      // https://developers.google.com/youtube/player_parameters
+      autoplay: 1,
+    },
   };
 
   const onReady: YouTubeProps['onReady'] = (e) => {
-    console.log(e.target);
+    console.log('onReady');
+    e.target.mute();
   };
 
-  const onStateChange = (e: { target: any; data: number }) => {
+  const onStateChange: YouTubeProps['onStateChange'] = (e) => {
+    console.log('onStateChange', e.data);
     const type = e.data;
-    console.log(type);
+    if (type === 0) setQueue((queue) => queue.slice(1));
+    if (type === 1) {
+      if (e.target.isMuted()) {
+        console.log('음소거');
+        e.target.unMute();
+      } else console.log('음소거 아님');
+    }
   };
 
   return (
@@ -37,11 +65,23 @@ export default function Home() {
 
       <YouTube
         id='player'
-        videoId='2g811Eo7K8U'
+        videoId={queue[0].id}
         opts={opts}
         onReady={onReady}
         onStateChange={onStateChange}
       />
+
+      <div>
+        {list.map((item, idx) => {
+          return (
+            <div key={item.id + idx}>
+              <span>
+                {item.id === queue[0].id ? <strong>{item.id}</strong> : item.id}
+              </span>
+            </div>
+          );
+        })}
+      </div>
     </>
   );
 }
