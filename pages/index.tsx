@@ -1,25 +1,31 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
-
 import YouTube, { YouTubeProps } from 'react-youtube';
+import RequestSong from '@/components/RequestSong';
+import useWebSocket from '@/hooks/useWebSocket';
+import { Item } from '@/types';
+import { getSendData } from '@/utils';
 
-type Item = {
-  id: string;
-  from: string;
-};
 
 export default function Home() {
+  const ws = useWebSocket('ws://localhost:4004/ws');
+
   const [queue, setQueue] = useState<Item[]>([
-    { id: 'HoSQqadfiag', from: 'streamer' },
-    { id: 'oKCQJ8w5e3E', from: 'streamer' },
-    { id: 'pnxYMsBdyxo', from: 'streamer' },
     { id: 'b12-WUgXAzg', from: 'streamer' },
   ]);
+  const [index, setIndex] = useState<number>(0);
 
-  const [prev, setPrev] = useState<Item[]>([]);
-
-  const [list, setList] = useState<Item[]>([...prev, ...queue]);
+  useEffect(() => {
+    async function initController() {
+      const { queue } = await fetch('http://localhost:4004/list').then((res) =>
+        res.json()
+      );
+      setQueue((q) => queue);
+    }
+    initController();
+    // eslint-disable-next-line
+  }, []);
 
   const opts: YouTubeProps['opts'] = {
     width: '480',
@@ -37,13 +43,26 @@ export default function Home() {
 
   const onStateChange: YouTubeProps['onStateChange'] = (e) => {
     console.log('onStateChange', e.data);
-    const type = e.data;
-    if (type === 0) setQueue((queue) => queue.slice(1));
-    if (type === 1) {
+    if (e.data === 0) {
+      setIndex((idx) => {
+        let nextIdx = 0;
+        if (idx < queue.length - 1) {
+          nextIdx = idx + 1;
+        }
+        e.target.loadVideoById(queue[nextIdx].id);
+        e.target.playVideo();
+        return nextIdx;
+      });
+    }
+    if (e.data === 1) {
       if (e.target.isMuted()) {
         console.log('음소거');
         e.target.unMute();
+        ws?.send(getSendData('play', queue[index]));
       } else console.log('음소거 아님');
+    }
+    if (e.data === 2) {
+      ws?.send(getSendData('pause', queue[index]));
     }
   };
 
@@ -65,23 +84,29 @@ export default function Home() {
 
       <YouTube
         id='player'
-        videoId={queue[0].id}
+        videoId={queue[index].id}
         opts={opts}
         onReady={onReady}
         onStateChange={onStateChange}
       />
 
       <div>
-        {list.map((item, idx) => {
+        {queue.map((item, idx) => {
           return (
             <div key={item.id + idx}>
               <span>
-                {item.id === queue[0].id ? <strong>{item.id}</strong> : item.id}
+                {item.id === queue[index].id ? (
+                  <strong style={{ fontStyle: 'italic' }}>{item.id}</strong>
+                ) : (
+                  item.id
+                )}
               </span>
             </div>
           );
         })}
       </div>
+
+      <RequestSong ws={ws} />
     </>
   );
 }
