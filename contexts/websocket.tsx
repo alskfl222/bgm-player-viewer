@@ -4,17 +4,17 @@ import { getSendData } from '@/utils';
 
 export const WebsocketContext = createContext<WebsocketContextType>({
   queue: [],
-  send: (eventName: string, data: any) => {},
+  send: (...args: any) => {},
 });
 
 export function WebsocketProvider({ children }: any) {
   const [queue, setQueue] = useState<Item[]>([
-    { id: 'b12-WUgXAzg', from: 'streamer' },
+    { name: 'Fairy Tale', id: 'b12-WUgXAzg', from: 'list' },
   ]);
   const ws = useRef<WebSocket | null>(null);
 
-  const send = (eventName: string, data: Item) => {
-    ws.current?.send(getSendData(eventName, data));
+  const send = (eventName: string, data?: any) => {
+    ws.current?.send(getSendData(eventName, data ? data : queue[0]));
   };
 
   const onOpen = useCallback((ev: Event) => {
@@ -42,14 +42,6 @@ export function WebsocketProvider({ children }: any) {
   }, []);
 
   useEffect(() => {
-    async function initController() {
-      const { data } = await fetch('http://localhost:4004/list').then((res) =>
-        res.json()
-      );
-      setQueue((q) => data.queue);
-    }
-    initController();
-
     if (!ws.current) {
       const websocket = new WebSocket('ws://localhost:4004/ws');
       websocket.onopen = onOpen;

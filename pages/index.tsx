@@ -1,15 +1,12 @@
-import { useEffect, useState, useContext } from 'react';
+import { useContext } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import YouTube, { YouTubeProps } from 'react-youtube';
 import RequestSong from '@/components/RequestSong';
-import { Item } from '@/types';
 import { WebsocketContext } from '@/contexts/websocket';
 
 export default function Home() {
   const { queue, send } = useContext(WebsocketContext);
-
-  const [index, setIndex] = useState<number>(0);
 
   const opts: YouTubeProps['opts'] = {
     width: '480',
@@ -27,23 +24,30 @@ export default function Home() {
 
   const onStateChange: YouTubeProps['onStateChange'] = (e) => {
     console.log('onStateChange', e.data);
+    if (e.data === -1) {
+      console.log('시작되지 않음');
+    }
     if (e.data === 0) {
-      setIndex((idx) => {
-        const nextIdx = idx < queue.length - 1 ? idx + 1 : 0;
-        e.target.loadVideoById(queue[nextIdx].id);
-        e.target.playVideo();
-        return nextIdx;
-      });
+      e.target.loadVideoById(queue[1].id);
+      e.target.playVideo();
+      send('stop');
     }
     if (e.data === 1) {
       if (e.target.isMuted()) {
         console.log('음소거');
         e.target.unMute();
       } else console.log('음소거 아님');
-      send('play', queue[index]);
+      send('play');
     }
     if (e.data === 2) {
-      send('pause', queue[index]);
+      send('pause');
+    }
+  };
+
+  const onError: YouTubeProps['onError'] = (e) => {
+    console.log(e);
+    if (e.data === 101 || e.data === 150) {
+      send('stop')
     }
   };
 
@@ -65,10 +69,11 @@ export default function Home() {
 
       <YouTube
         id='player'
-        videoId={queue[index].id}
+        videoId={queue[0].id}
         opts={opts}
         onReady={onReady}
         onStateChange={onStateChange}
+        onError={onError}
       />
 
       <div>
@@ -76,10 +81,10 @@ export default function Home() {
           return (
             <div key={item.id + idx}>
               <span>
-                {item.id === queue[index].id ? (
-                  <strong style={{ fontStyle: 'italic' }}>{item.id}</strong>
+                {idx === 0 ? (
+                  <strong style={{ fontStyle: 'italic' }}>{item.name}</strong>
                 ) : (
-                  item.id
+                  item.name
                 )}
               </span>
             </div>
