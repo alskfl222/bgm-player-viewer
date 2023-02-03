@@ -18,8 +18,8 @@
     "paths": {
       "@/*": ["./*"]
     },
-    "typeRoots": ["../node_modules/@types"],
+    "typeRoots": ["../node_modules/@types"]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "contexts/websocket.tsx"],
   "exclude": ["node_modules"]
 }

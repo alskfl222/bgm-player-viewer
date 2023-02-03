@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import YouTube, { YouTubeProps } from 'react-youtube';
 import RequestSong from '@/components/RequestSong';
-import useWebSocket from '@/hooks/useWebSocket';
 import { Item } from '@/types';
+import { WebsocketContext } from '@/contexts/websocket';
+import { getSendData } from '@/utils';
 
 export default function Home() {
-  const { sendData } = useWebSocket();
-
+  const { msg, send } = useContext(WebsocketContext);
   const [queue, setQueue] = useState<Item[]>([
     { id: 'b12-WUgXAzg', from: 'streamer' },
   ]);
@@ -43,10 +43,7 @@ export default function Home() {
     console.log('onStateChange', e.data);
     if (e.data === 0) {
       setIndex((idx) => {
-        let nextIdx = 0;
-        if (idx < queue.length - 1) {
-          nextIdx = idx + 1;
-        }
+        const nextIdx = idx < queue.length - 1 ? idx + 1 : 0;
         e.target.loadVideoById(queue[nextIdx].id);
         e.target.playVideo();
         return nextIdx;
@@ -56,11 +53,11 @@ export default function Home() {
       if (e.target.isMuted()) {
         console.log('음소거');
         e.target.unMute();
-        sendData('play', queue[index]);
       } else console.log('음소거 아님');
+      send('play', queue[index]);
     }
     if (e.data === 2) {
-      sendData('pause', queue[index]);
+      send('pause', queue[index]);
     }
   };
 

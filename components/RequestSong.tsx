@@ -1,14 +1,14 @@
-import { ChangeEvent, useState } from 'react';
-import useWebSocket from '@/hooks/useWebSocket';
+import { ChangeEvent, useState, useContext } from 'react';
+import { WebsocketContext } from '@/contexts/websocket';
 
 export default function RequestSong() {
+  const { send } = useContext(WebsocketContext);
   const [id, setId] = useState<string>('');
-  const { sendData } = useWebSocket();
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setId(e.target.value);
   };
   const onClick = () => {
-    sendData('append', { id, from: 'streamer' });
+    send('append', { id, from: 'streamer' });
   };
   return (
     <div>
