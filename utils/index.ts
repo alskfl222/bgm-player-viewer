@@ -1,5 +1,8 @@
-import { Item } from "@/types";
+import { Item } from '@/types';
 
-export const getSendData = (event: string, item: Item) => {
-  return JSON.stringify({ event, ...item });
+export const getSendData = (eventName: string, data: Item) => {
+  return JSON.stringify({
+    event: { type: 'bgm', name: eventName },
+    data,
+  });
 };

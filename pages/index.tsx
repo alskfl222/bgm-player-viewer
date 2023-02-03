@@ -5,11 +5,9 @@ import YouTube, { YouTubeProps } from 'react-youtube';
 import RequestSong from '@/components/RequestSong';
 import useWebSocket from '@/hooks/useWebSocket';
 import { Item } from '@/types';
-import { getSendData } from '@/utils';
-
 
 export default function Home() {
-  const ws = useWebSocket('ws://localhost:4004/ws');
+  const { sendData } = useWebSocket();
 
   const [queue, setQueue] = useState<Item[]>([
     { id: 'b12-WUgXAzg', from: 'streamer' },
@@ -18,10 +16,10 @@ export default function Home() {
 
   useEffect(() => {
     async function initController() {
-      const { queue } = await fetch('http://localhost:4004/list').then((res) =>
+      const { data } = await fetch('http://localhost:4004/list').then((res) =>
         res.json()
       );
-      setQueue((q) => queue);
+      setQueue((q) => data.queue);
     }
     initController();
     // eslint-disable-next-line
@@ -58,11 +56,11 @@ export default function Home() {
       if (e.target.isMuted()) {
         console.log('음소거');
         e.target.unMute();
-        ws?.send(getSendData('play', queue[index]));
+        sendData('play', queue[index]);
       } else console.log('음소거 아님');
     }
     if (e.data === 2) {
-      ws?.send(getSendData('pause', queue[index]));
+      sendData('pause', queue[index]);
     }
   };
 
@@ -106,7 +104,7 @@ export default function Home() {
         })}
       </div>
 
-      <RequestSong ws={ws} />
+      <RequestSong />
     </>
   );
 }
