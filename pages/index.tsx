@@ -5,25 +5,11 @@ import YouTube, { YouTubeProps } from 'react-youtube';
 import RequestSong from '@/components/RequestSong';
 import { Item } from '@/types';
 import { WebsocketContext } from '@/contexts/websocket';
-import { getSendData } from '@/utils';
 
 export default function Home() {
-  const { msg, send } = useContext(WebsocketContext);
-  const [queue, setQueue] = useState<Item[]>([
-    { id: 'b12-WUgXAzg', from: 'streamer' },
-  ]);
-  const [index, setIndex] = useState<number>(0);
+  const { queue, send } = useContext(WebsocketContext);
 
-  useEffect(() => {
-    async function initController() {
-      const { data } = await fetch('http://localhost:4004/list').then((res) =>
-        res.json()
-      );
-      setQueue((q) => data.queue);
-    }
-    initController();
-    // eslint-disable-next-line
-  }, []);
+  const [index, setIndex] = useState<number>(0);
 
   const opts: YouTubeProps['opts'] = {
     width: '480',

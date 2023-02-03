@@ -1,20 +1,21 @@
 import { useState, useEffect, useRef, useCallback, createContext } from 'react';
-import { Item } from '@/types';
+import { Item, WebsocketContextType } from '@/types';
 import { getSendData } from '@/utils';
 
-type WebsocketContextType = {
-  msg: string,
-  send: (eventName: string, data: any) => void;
-};
-
 export const WebsocketContext = createContext<WebsocketContextType>({
-  msg: '',
+  queue: [],
   send: (eventName: string, data: any) => {},
 });
 
 export function WebsocketProvider({ children }: any) {
-  const [msg, setMsg] = useState<string>('')
+  const [queue, setQueue] = useState<Item[]>([
+    { id: 'b12-WUgXAzg', from: 'streamer' },
+  ]);
   const ws = useRef<WebSocket | null>(null);
+
+  const send = (eventName: string, data: Item) => {
+    ws.current?.send(getSendData(eventName, data));
+  };
 
   const onOpen = useCallback((ev: Event) => {
     console.log('ws connected');
@@ -26,19 +27,29 @@ export function WebsocketProvider({ children }: any) {
   }, []);
 
   const onMessage = useCallback((ev: MessageEvent<any>) => {
-    console.log('get message')
-    console.log(ev);
+    console.log('get message');
+    const wsData = JSON.parse(ev.data);
+    const { event, data } = wsData;
+    if (event.type === 'bgm') {
+      if (event.name === 'queue') {
+        setQueue(data.queue);
+      }
+    }
   }, []);
 
   const onError = useCallback((ev: Event) => {
     console.log(ev);
   }, []);
 
-  const send = (eventName: string, data: Item) => {
-    ws.current?.send(getSendData(eventName, data));
-  };
-
   useEffect(() => {
+    async function initController() {
+      const { data } = await fetch('http://localhost:4004/list').then((res) =>
+        res.json()
+      );
+      setQueue((q) => data.queue);
+    }
+    initController();
+
     if (!ws.current) {
       const websocket = new WebSocket('ws://localhost:4004/ws');
       websocket.onopen = onOpen;
@@ -56,7 +67,7 @@ export function WebsocketProvider({ children }: any) {
   }, []);
 
   return (
-    <WebsocketContext.Provider value={{ msg, send }}>
+    <WebsocketContext.Provider value={{ queue, send }}>
       {children}
     </WebsocketContext.Provider>
   );
