@@ -4,12 +4,19 @@ import { getSendData } from '@/utils';
 
 export const WebsocketContext = createContext<WebsocketContextType>({
   queue: [],
-  send: (...args: any) => {},
+  send: () => {},
 });
 
 export function WebsocketProvider({ children }: any) {
   const [queue, setQueue] = useState<Item[]>([
-    { name: 'Fairy Tale', id: 'b12-WUgXAzg', from: 'list' },
+    {
+      title: 'Fairy Tale',
+      id: 'b12-WUgXAzg',
+      from: 'list',
+      channel: 'Author wind - Topic',
+      channel_id: 'UCeieSudBwInJNTbW0ylHfGg',
+      active: true,
+    },
   ]);
   const ws = useRef<WebSocket | null>(null);
 

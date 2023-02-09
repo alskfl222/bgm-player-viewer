@@ -1,7 +1,10 @@
 export type Item = {
-  name: string;
+  title: string;
   id: string;
   from: string;
+  active: boolean;
+  channel: string;
+  channel_id: string;
 };
 
 export type WebsocketContextType = {

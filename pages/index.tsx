@@ -4,6 +4,7 @@ import Image from 'next/image';
 import YouTube, { YouTubeProps } from 'react-youtube';
 import RequestSong from '@/components/RequestSong';
 import { WebsocketContext } from '@/contexts/websocket';
+import ListItem from '@/components/ListItem';
 
 export default function Home() {
   const { queue, send } = useContext(WebsocketContext);
@@ -18,11 +19,13 @@ export default function Home() {
   };
 
   const onReady: YouTubeProps['onReady'] = (e) => {
+    // https://developers.google.com/youtube/iframe_api_reference#Events
     console.log('onReady');
-    e.target.mute();
+    // e.target.mute();
   };
 
   const onStateChange: YouTubeProps['onStateChange'] = (e) => {
+    // https://developers.google.com/youtube/iframe_api_reference#Events
     console.log('onStateChange', e.data);
     if (e.data === -1) {
       console.log('시작되지 않음');
@@ -33,10 +36,10 @@ export default function Home() {
       send('stop');
     }
     if (e.data === 1) {
-      if (e.target.isMuted()) {
-        console.log('음소거');
-        e.target.unMute();
-      } else console.log('음소거 아님');
+      // if (e.target.isMuted()) {
+      //   console.log('음소거');
+      //   e.target.unMute();
+      // } else console.log('음소거 아님');
       send('play');
     }
     if (e.data === 2) {
@@ -45,9 +48,11 @@ export default function Home() {
   };
 
   const onError: YouTubeProps['onError'] = (e) => {
-    console.log(e);
+    // https://developers.google.com/youtube/iframe_api_reference#Events
+    console.log(e)
     if (e.data === 101 || e.data === 150) {
-      send('stop')
+      send('inactive')
+      send('stop');
     }
   };
 
@@ -78,17 +83,7 @@ export default function Home() {
 
       <div>
         {queue.map((item, idx) => {
-          return (
-            <div key={item.id + idx}>
-              <span>
-                {idx === 0 ? (
-                  <strong style={{ fontStyle: 'italic' }}>{item.name}</strong>
-                ) : (
-                  item.name
-                )}
-              </span>
-            </div>
-          );
+          return <ListItem item={item} idx={idx} key={item.id + idx} />;
         })}
       </div>
 
