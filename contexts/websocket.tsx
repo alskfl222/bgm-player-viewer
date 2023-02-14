@@ -4,8 +4,8 @@ import { getSendData } from '@/utils';
 
 const WS_SERVER_URL =
   process.env.NODE_ENV === 'production'
-    ? process.env.NEXT_PUBLIC_LOCAL!
-    : process.env.NEXT_PUBLIC_CLOUD!;
+    ? process.env.NEXT_PUBLIC_CLOUD!
+    : process.env.NEXT_PUBLIC_LOCAL!;
 
 export const WebsocketContext = createContext<WebsocketContextType>({
   queue: [],
