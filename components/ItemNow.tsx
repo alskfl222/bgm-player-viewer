@@ -26,8 +26,8 @@ export default function ItemNow() {
   return (
     <>
       {show && (
-        <div className='fixed top-0 w-screen py-4 flex justify-center bg-neutral-300'>
-          <div className='w-[480px] p-4 flex gap-4'>
+        <div className='fixed top-0 w-screen p-4 flex bg-neutral-300'>
+          <div className='w-[480px] p-4 flex justify-between items-center gap-4'>
             <div className='font-bold whitespace-nowrap text-ellipsis overflow-hidden'>
               <a
                 href={`https://youtu.be/${queue[0].id}`}
@@ -38,7 +38,7 @@ export default function ItemNow() {
                 {queue[0].title}
               </a>
             </div>
-            <span className='flex-none text-lg'>{queue[0].from}</span>
+            <span className='flex-none'>{queue[0].from}</span>
           </div>
         </div>
       )}

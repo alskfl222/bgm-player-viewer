@@ -50,7 +50,8 @@ export function WebsocketProvider({ children }: any) {
 
   useEffect(() => {
     if (!ws.current) {
-      const websocket = new WebSocket('ws://localhost:4004/ws');
+      // const websocket = new WebSocket('ws://localhost:4004/ws');
+      const websocket = new WebSocket('ws://146.56.101.223:4004/ws');
       websocket.onopen = onOpen;
       websocket.onclose = onClose;
       websocket.onmessage = onMessage;
