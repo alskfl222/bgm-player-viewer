@@ -4,16 +4,16 @@ type ListItemProps = { item: Item; idx: number };
 
 export default function ListItem({ item, idx }: ListItemProps) {
   return (
-    <div>
-      <span>
+    <div className='p-4'>
+      <span className='p-4'>
         {idx === 0 ? (
           <strong style={{ fontStyle: 'italic' }}>{item.title}</strong>
         ) : (
           item.title
         )}
-        {item.channel}
-        {item.from}
       </span>
+      <span>{item.channel}</span>
+      <span>{item.from}</span>
     </div>
   );
 }
