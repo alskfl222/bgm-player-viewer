@@ -1,60 +1,31 @@
-import { useContext } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
-import YouTube, { YouTubeProps } from 'react-youtube';
-import RequestSong from '@/components/RequestSong';
 import { WebsocketContext } from '@/contexts/websocket';
-import ListItem from '@/components/ListItem';
+import List from '@/components/List';
+import RequestSong from '@/components/RequestSong';
+import { YoutubePlayer } from '@/components/YoutubePlayer';
 
 export default function Home() {
   const { queue, send } = useContext(WebsocketContext);
+  const [show, setShow] = useState(false);
+  const now = useRef(null);
 
-  const opts: YouTubeProps['opts'] = {
-    width: '480',
-    height: '270',
-    playerVars: {
-      // https://developers.google.com/youtube/player_parameters
-      autoplay: 1,
-    },
-  };
-
-  const onReady: YouTubeProps['onReady'] = (e) => {
-    // https://developers.google.com/youtube/iframe_api_reference#Events
-    console.log('onReady');
-    // e.target.mute();
-  };
-
-  const onStateChange: YouTubeProps['onStateChange'] = (e) => {
-    // https://developers.google.com/youtube/iframe_api_reference#Events
-    console.log('onStateChange', e.data);
-    if (e.data === -1) {
-      console.log('시작되지 않음');
+  useEffect(() => {
+    const io = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (!entry.isIntersecting) setShow(true);
+        else setShow(false);
+      },
+      { threshold: 0.8 }
+    );
+    if (now.current) {
+      io.observe(now.current);
     }
-    if (e.data === 0) {
-      e.target.loadVideoById(queue[1].id);
-      e.target.playVideo();
-      send('stop');
-    }
-    if (e.data === 1) {
-      // if (e.target.isMuted()) {
-      //   console.log('음소거');
-      //   e.target.unMute();
-      // } else console.log('음소거 아님');
-      send('play');
-    }
-    if (e.data === 2) {
-      send('pause');
-    }
-  };
-
-  const onError: YouTubeProps['onError'] = (e) => {
-    // https://developers.google.com/youtube/iframe_api_reference#Events
-    console.log(e)
-    if (e.data === 101 || e.data === 150) {
-      send('inactive')
-      send('stop');
-    }
-  };
+    return () => io && io.disconnect();
+    // eslint-disable-next-line
+  }, [now.current]);
 
   return (
     <>
@@ -68,26 +39,18 @@ export default function Home() {
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
-      <div>
-        <p>개발시작</p>
+      <div className='p-4 flex justify-center'>
+        <div className='w-full max-w-[480px] flex flex-col items-center gap-4'>
+          <YoutubePlayer />
+
+          <RequestSong />
+
+          {show && <div className='fixed w-full h-10 bg-neutral-300'>show</div>}
+          <div ref={now}>{queue[0].title}</div>
+
+          <List queue={queue} />
+        </div>
       </div>
-
-      <YouTube
-        id='player'
-        videoId={queue[0].id}
-        opts={opts}
-        onReady={onReady}
-        onStateChange={onStateChange}
-        onError={onError}
-      />
-
-      <div>
-        {queue.map((item, idx) => {
-          return <ListItem item={item} idx={idx} key={item.id + idx} />;
-        })}
-      </div>
-
-      <RequestSong />
     </>
   );
 }

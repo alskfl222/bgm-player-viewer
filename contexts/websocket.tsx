@@ -10,11 +10,11 @@ export const WebsocketContext = createContext<WebsocketContextType>({
 export function WebsocketProvider({ children }: any) {
   const [queue, setQueue] = useState<Item[]>([
     {
-      title: 'Fairy Tale',
-      id: 'b12-WUgXAzg',
+      title: '몽환의 숲 (Phantasmal Woods) [메이플스토리 OST : 아케인 리버]',
+      id: 'U_-yYE38F9w',
       from: 'list',
-      channel: 'Author wind - Topic',
-      channel_id: 'UCeieSudBwInJNTbW0ylHfGg',
+      channel: 'NECORD MUSIC',
+      channel_id: 'UC7gy0ee1jeNO11HievGQJzA',
       active: true,
     },
   ]);
