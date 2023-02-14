@@ -2,6 +2,11 @@ import { useState, useEffect, useRef, useCallback, createContext } from 'react';
 import { Item, WebsocketContextType } from '@/types';
 import { getSendData } from '@/utils';
 
+const WS_SERVER_URL =
+  process.env.NODE_ENV === 'production'
+    ? process.env.NEXT_PUBLIC_LOCAL!
+    : process.env.NEXT_PUBLIC_CLOUD!;
+
 export const WebsocketContext = createContext<WebsocketContextType>({
   queue: [],
   send: () => {},
@@ -50,8 +55,7 @@ export function WebsocketProvider({ children }: any) {
 
   useEffect(() => {
     if (!ws.current) {
-      // const websocket = new WebSocket('ws://localhost:4004/ws');
-      const websocket = new WebSocket('ws://146.56.101.223:4004/ws');
+      const websocket = new WebSocket(WS_SERVER_URL);
       websocket.onopen = onOpen;
       websocket.onclose = onClose;
       websocket.onmessage = onMessage;
