@@ -1,8 +1,8 @@
 import { Item } from '@/types';
 
-export const getSendData = (eventName: string, data: Item) => {
+export const getSendData = (eventName: string, data?: Item) => {
   return JSON.stringify({
-    event: { type: 'bgm', name: eventName },
+    session: { type: 'controller', event: `bgm.${eventName}` },
     data,
   });
 };

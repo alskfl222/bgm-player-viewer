@@ -2,10 +2,8 @@ import { useState, useEffect, useRef, useCallback, createContext } from 'react';
 import { Item, WebsocketContextType } from '@/types';
 import { getSendData } from '@/utils';
 
-const WS_SERVER_URL =
-  process.env.NODE_ENV === 'production'
-    ? process.env.NEXT_PUBLIC_CLOUD!
-    : process.env.NEXT_PUBLIC_LOCAL!;
+// const WS_SERVER_URL = process.env.NEXT_PUBLIC_CLOUD!
+const WS_SERVER_URL = process.env.NEXT_PUBLIC_LOCAL!
 
 export const WebsocketContext = createContext<WebsocketContextType>({
   queue: [],
@@ -23,6 +21,7 @@ export function WebsocketProvider({ children }: any) {
       active: true,
     },
   ]);
+  const [id, setId] = useState<string>('')
   const ws = useRef<WebSocket | null>(null);
 
   const send = (eventName: string, data?: any) => {
@@ -30,8 +29,8 @@ export function WebsocketProvider({ children }: any) {
   };
 
   const onOpen = useCallback((ev: Event) => {
-    console.log('ws connected');
-    console.log(ev);
+    console.log(`SERVER ${WS_SERVER_URL} connected`);
+    ws.current?.send(getSendData('session'))
   }, []);
 
   const onClose = useCallback(() => {
@@ -45,6 +44,9 @@ export function WebsocketProvider({ children }: any) {
     if (event.type === 'bgm') {
       if (event.name === 'queue') {
         setQueue(data.queue);
+      }
+      if (event.name === 'session') {
+        setId('')
       }
     }
   }, []);
