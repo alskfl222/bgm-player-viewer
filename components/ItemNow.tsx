@@ -26,7 +26,7 @@ export default function ItemNow() {
   return (
     <>
       {show && (
-        <div className='fixed top-0 w-screen p-4 flex bg-neutral-300'>
+        <div className='fixed top-0 w-screen p-4 flex justify-center bg-neutral-300'>
           <div className='w-[480px] p-4 flex justify-between items-center gap-4'>
             <div className='font-bold whitespace-nowrap text-ellipsis overflow-hidden'>
               <a
