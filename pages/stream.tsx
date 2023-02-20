@@ -9,7 +9,7 @@ export default function Stream() {
                   rounded-tr-3xl bg-neutral-700'
     >
       <div className='w-full flex flex-col justify-center gap-6 text-neutral-100'>
-        <span>{queue[0].title}</span>
+        <span className='text-3xl font-bold'>{queue[0].title}</span>
         <div className='w-full flex justify-between'>
           <span>{queue[0].channel}</span>
           <span>{queue[0].from}</span>

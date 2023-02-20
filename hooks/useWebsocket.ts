@@ -18,14 +18,17 @@ export function useWebsocket(sessionType: string): WebsocketType {
   const [id, setId] = useState<string>('');
   const ws = useRef<WebSocket | null>(null);
 
-  const send = (eventName: string, data?: any) => {
-    ws.current?.send(
-      JSON.stringify({
-        session: { type: sessionType, event: `bgm.${eventName}`, id },
-        data: data ? data : queue[0],
-      })
-    );
-  };
+  const send = useCallback(
+    (eventName: string, data?: any) => {
+      ws.current?.send(
+        JSON.stringify({
+          session: { type: sessionType, event: `bgm.${eventName}`, id },
+          data: data ? data : queue[0],
+        })
+      );
+    },
+    [sessionType, queue, id]
+  );
 
   const onOpen = useCallback((ev: Event) => {
     console.log(`SERVER ${WS_SERVER_URL} connected`);
@@ -35,13 +38,11 @@ export function useWebsocket(sessionType: string): WebsocketType {
 
   const onClose = useCallback(() => {
     console.log('ws close');
-    send('session')
   }, []);
 
   const onMessage = useCallback((ev: MessageEvent<any>) => {
     console.log('get message');
     const wsData = JSON.parse(ev.data);
-    console.log(wsData);
     const { session, data } = wsData;
     const [eventType, eventName] = session.event.split('.');
     if (eventType === 'bgm') {
@@ -69,6 +70,7 @@ export function useWebsocket(sessionType: string): WebsocketType {
     }
 
     return () => {
+      send('session', { id });
       ws.current?.close();
     };
 
