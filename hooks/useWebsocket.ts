@@ -16,6 +16,8 @@ export function useWebsocket(sessionType: string): WebsocketType {
     },
   ]);
   const [id, setId] = useState<string>('');
+  const [state, setState] = useState<"start" | "stop">('stop');
+  const [currentTime, setCurrentTime] = useState<number>(0);
   const ws = useRef<WebSocket | null>(null);
 
   const send = useCallback(
@@ -52,6 +54,11 @@ export function useWebsocket(sessionType: string): WebsocketType {
       if (eventName === 'session') {
         setId(data.session_id);
       }
+      if (eventName === 'current_time') {
+        console.log(data)
+        setState(data.state)
+        setCurrentTime(Math.floor(Number(data.current_time)))
+      }
     }
   }, []);
 
@@ -70,12 +77,11 @@ export function useWebsocket(sessionType: string): WebsocketType {
     }
 
     return () => {
-      send('session', { id });
       ws.current?.close();
     };
 
     // eslint-disable-next-line
   }, []);
 
-  return { queue, send };
+  return { queue, state, currentTime, send };
 }
