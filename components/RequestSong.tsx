@@ -7,16 +7,22 @@ export default function RequestSong({ send }: Pick<WebsocketType, 'send'>) {
     setQuery(e.target.value);
   };
   const onClick = (): void => {
-    send('append', { query, from: 'streamer' });
+    if (query) {
+      setQuery('');
+      send('append', { query, from: 'viewer' });
+    }
   };
   const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>): void => {
-    if (e.key === 'Enter') onClick();
+    if (e.key === 'Enter') {
+      onClick();
+    }
   };
   return (
     <div className='w-full flex justify-between gap-4'>
       <input
         className='w-full h-12 px-4 border-b border-b-neutral-700'
         type='text'
+        value={query}
         onChange={onChange}
         onKeyUp={(e) => onKeyUp(e)}
       />
