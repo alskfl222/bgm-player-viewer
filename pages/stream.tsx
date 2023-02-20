@@ -1,8 +1,13 @@
-import { useContext } from 'react';
+import { useEffect, useContext } from 'react';
 import { WebsocketContext } from '@/contexts/websocket';
 
 export default function Stream() {
-  const { queue } = useContext(WebsocketContext);
+  const { queue, send } = useContext(WebsocketContext);
+
+  useEffect(() => {
+    send('stream', 'session');
+    // eslint-disable-next-line
+  }, []);
 
   return (
     <div

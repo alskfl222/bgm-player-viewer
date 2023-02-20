@@ -8,7 +8,7 @@ export default function RequestSong() {
     setQuery(e.target.value);
   };
   const onClick = (): void => {
-    send('append', { query, from: 'streamer' });
+    send('controller', 'append', { query, from: 'streamer' });
   };
   const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter') onClick();

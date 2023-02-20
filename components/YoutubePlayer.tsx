@@ -16,6 +16,7 @@ export function YoutubePlayer() {
   const onReady: YouTubeProps['onReady'] = (e) => {
     // https://developers.google.com/youtube/iframe_api_reference#Events
     console.log('onReady');
+    send("controller", "session")
     // e.target.mute();
   };
 
@@ -31,17 +32,17 @@ export function YoutubePlayer() {
     if (e.data === 0) {
       e.target.loadVideoById(queue[1].id);
       e.target.playVideo();
-      send('stop', data);
+      send('controller', 'stop', data);
     }
     if (e.data === 1) {
       // if (e.target.isMuted()) {
       //   console.log('음소거');
       //   e.target.unMute();
       // } else console.log('음소거 아님');
-      send('play', data);
+      send('controller', 'play', data);
     }
     if (e.data === 2) {
-      send('pause', data);
+      send('controller', 'pause', data);
     }
   };
 
@@ -51,8 +52,8 @@ export function YoutubePlayer() {
     if (e.data === 101 || e.data === 150) {
       e.target.loadVideoById(queue[1].id);
       e.target.playVideo();
-      send('inactive');
-      send('stop');
+      send('controller', 'inactive');
+      send('controller', 'stop');
     }
   };
   return (

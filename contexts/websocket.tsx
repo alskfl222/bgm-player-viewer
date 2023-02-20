@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef, useCallback, createContext } from 'react';
 import { Item, WebsocketContextType } from '@/types';
-import { getSendData } from '@/utils';
 
 // const WS_SERVER_URL = process.env.NEXT_PUBLIC_CLOUD!
-const WS_SERVER_URL = process.env.NEXT_PUBLIC_LOCAL!
+const WS_SERVER_URL = process.env.NEXT_PUBLIC_LOCAL!;
 
 export const WebsocketContext = createContext<WebsocketContextType>({
   queue: [],
@@ -21,16 +20,20 @@ export function WebsocketProvider({ children }: any) {
       active: true,
     },
   ]);
-  const [id, setId] = useState<string>('')
+  const [id, setId] = useState<string>('');
   const ws = useRef<WebSocket | null>(null);
 
-  const send = (eventName: string, data?: any) => {
-    ws.current?.send(getSendData(eventName, data ? data : queue[0]));
+  const send = (sessionType: string, eventName: string, data?: any) => {
+    ws.current?.send(
+      JSON.stringify({
+        session: { type: sessionType, event: `bgm.${eventName}` },
+        data: data ? data : queue[0],
+      })
+    );
   };
 
   const onOpen = useCallback((ev: Event) => {
     console.log(`SERVER ${WS_SERVER_URL} connected`);
-    ws.current?.send(getSendData('session'))
   }, []);
 
   const onClose = useCallback(() => {
@@ -41,12 +44,14 @@ export function WebsocketProvider({ children }: any) {
     console.log('get message');
     const wsData = JSON.parse(ev.data);
     const { event, data } = wsData;
-    if (event.type === 'bgm') {
-      if (event.name === 'queue') {
+    const [eventType, eventName] = event.split(".")
+    if (eventType === 'bgm') {
+      if (eventName === 'queue') {
         setQueue(data.queue);
       }
-      if (event.name === 'session') {
-        setId('')
+      if (eventName === 'session') {
+        console.log(wsData);
+        setId('');
       }
     }
   }, []);

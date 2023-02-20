@@ -9,5 +9,5 @@ export type Item = {
 
 export type WebsocketContextType = {
   queue: Item[];
-  send: (eventName: string, data?: any) => void;
+  send: (sessionType: string, eventName: string, data?: any) => void;
 };
