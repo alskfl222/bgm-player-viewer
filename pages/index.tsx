@@ -21,8 +21,8 @@ export default function Home() {
 
       <div className='px-4 flex justify-center'>
         <div className='w-full max-w-[480px] p-2 flex flex-col items-center gap-4'>
-          <RequestSong send={send} />
           <Now queue={queue} />
+          <RequestSong send={send} />
           <List queue={queue} />
         </div>
       </div>
