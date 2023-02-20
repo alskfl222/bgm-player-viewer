@@ -7,7 +7,7 @@ import Now from '@/components/Now';
 import { useWebsocket } from '@/hooks/useWebsocket';
 
 export default function Home() {
-  const { queue, send } = useWebsocket('controller');
+  const { queue, send } = useWebsocket('viewer');
   return (
     <>
       <Head>

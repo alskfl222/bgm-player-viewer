@@ -49,8 +49,8 @@ export function YoutubePlayer({ queue, send }: WebsocketType) {
     if (e.data === 101 || e.data === 150) {
       e.target.loadVideoById(queue[1].id);
       e.target.playVideo();
-      send('controller', 'inactive');
-      send('controller', 'stop');
+      send('inactive');
+      send('stop');
     }
   };
   return (
