@@ -1,9 +1,7 @@
-import { useContext } from 'react';
 import YouTube, { YouTubeProps } from 'react-youtube';
-import { WebsocketContext } from '@/contexts/websocket';
+import { WebsocketType } from '@/types';
 
-export function YoutubePlayer() {
-  const { queue, send } = useContext(WebsocketContext);
+export function YoutubePlayer({ queue, send }: WebsocketType) {
   const opts: YouTubeProps['opts'] = {
     width: '480',
     height: '270',
@@ -16,7 +14,6 @@ export function YoutubePlayer() {
   const onReady: YouTubeProps['onReady'] = (e) => {
     // https://developers.google.com/youtube/iframe_api_reference#Events
     console.log('onReady');
-    send("controller", "session")
     // e.target.mute();
   };
 
@@ -32,17 +29,17 @@ export function YoutubePlayer() {
     if (e.data === 0) {
       e.target.loadVideoById(queue[1].id);
       e.target.playVideo();
-      send('controller', 'stop', data);
+      send('stop', data);
     }
     if (e.data === 1) {
       // if (e.target.isMuted()) {
       //   console.log('음소거');
       //   e.target.unMute();
       // } else console.log('음소거 아님');
-      send('controller', 'play', data);
+      send('play', data);
     }
     if (e.data === 2) {
-      send('controller', 'pause', data);
+      send('pause', data);
     }
   };
 

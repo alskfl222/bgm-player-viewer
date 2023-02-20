@@ -7,7 +7,7 @@ export type Item = {
   channel_id: string;
 };
 
-export type WebsocketContextType = {
+export type WebsocketType = {
   queue: Item[];
-  send: (sessionType: string, eventName: string, data?: any) => void;
+  send: (eventName: string, data?: any) => void;
 };

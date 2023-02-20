@@ -1,14 +1,13 @@
-import { ChangeEvent, useState, useContext } from 'react';
-import { WebsocketContext } from '@/contexts/websocket';
+import { ChangeEvent, useState } from 'react';
+import { WebsocketType } from '@/types';
 
-export default function RequestSong() {
-  const { send } = useContext(WebsocketContext);
+export default function RequestSong({ send }: Pick<WebsocketType, 'send'>) {
   const [query, setQuery] = useState<string>('');
   const onChange = (e: ChangeEvent<HTMLInputElement>): void => {
     setQuery(e.target.value);
   };
   const onClick = (): void => {
-    send('controller', 'append', { query, from: 'streamer' });
+    send('append', { query, from: 'streamer' });
   };
   const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter') onClick();

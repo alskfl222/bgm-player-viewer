@@ -1,9 +1,8 @@
-import { useState, useEffect, useRef, useContext } from 'react';
-import { WebsocketContext } from '@/contexts/websocket';
+import { WebsocketType } from '@/types';
+import { useState, useEffect, useRef } from 'react';
 import ListItem from './ListItem';
 
-export default function ItemNow() {
-  const { queue } = useContext(WebsocketContext);
+export default function Now({ queue }: Pick<WebsocketType, 'queue'>) {
   const [show, setShow] = useState(false);
   const now = useRef(null);
 

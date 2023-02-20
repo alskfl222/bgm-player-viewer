@@ -1,11 +1,13 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import List from '@/components/List';
-import RequestSong from '@/components/RequestSong';
 import { YoutubePlayer } from '@/components/YoutubePlayer';
-import ItemNow from '@/components/ItemNow';
+import RequestSong from '@/components/RequestSong';
+import Now from '@/components/Now';
+import { useWebsocket } from '@/hooks/useWebsocket';
 
 export default function Home() {
+  const { queue, send } = useWebsocket('controller');
   return (
     <>
       <Head>
@@ -20,10 +22,10 @@ export default function Home() {
 
       <div className='px-4 flex justify-center'>
         <div className='w-full max-w-[480px] p-2 flex flex-col items-center gap-4'>
-          <YoutubePlayer />
-          <RequestSong />
-          <ItemNow />
-          <List />
+          <YoutubePlayer queue={queue} send={send} />
+          <RequestSong send={send} />
+          <Now queue={queue} />
+          <List queue={queue} />
         </div>
       </div>
     </>

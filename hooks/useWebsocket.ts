@@ -1,15 +1,10 @@
-import { useState, useEffect, useRef, useCallback, createContext } from 'react';
-import { Item, WebsocketContextType } from '@/types';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Item, WebsocketType } from '@/types';
 
 // const WS_SERVER_URL = process.env.NEXT_PUBLIC_CLOUD!
 const WS_SERVER_URL = process.env.NEXT_PUBLIC_LOCAL!;
 
-export const WebsocketContext = createContext<WebsocketContextType>({
-  queue: [],
-  send: () => {},
-});
-
-export function WebsocketProvider({ children }: any) {
+export function useWebsocket(sessionType: string): WebsocketType {
   const [queue, setQueue] = useState<Item[]>([
     {
       title: '몽환의 숲 (Phantasmal Woods) [메이플스토리 OST : 아케인 리버]',
@@ -23,10 +18,10 @@ export function WebsocketProvider({ children }: any) {
   const [id, setId] = useState<string>('');
   const ws = useRef<WebSocket | null>(null);
 
-  const send = (sessionType: string, eventName: string, data?: any) => {
+  const send = (eventName: string, data?: any) => {
     ws.current?.send(
       JSON.stringify({
-        session: { type: sessionType, event: `bgm.${eventName}` },
+        session: { type: sessionType, event: `bgm.${eventName}`, id },
         data: data ? data : queue[0],
       })
     );
@@ -34,24 +29,27 @@ export function WebsocketProvider({ children }: any) {
 
   const onOpen = useCallback((ev: Event) => {
     console.log(`SERVER ${WS_SERVER_URL} connected`);
+    send('session');
+    // eslint-disable-next-line
   }, []);
 
   const onClose = useCallback(() => {
-    console.log('ws closed');
+    console.log('ws close');
+    send('session')
   }, []);
 
   const onMessage = useCallback((ev: MessageEvent<any>) => {
     console.log('get message');
     const wsData = JSON.parse(ev.data);
-    const { event, data } = wsData;
-    const [eventType, eventName] = event.split(".")
+    console.log(wsData);
+    const { session, data } = wsData;
+    const [eventType, eventName] = session.event.split('.');
     if (eventType === 'bgm') {
       if (eventName === 'queue') {
         setQueue(data.queue);
       }
       if (eventName === 'session') {
-        console.log(wsData);
-        setId('');
+        setId(data.session_id);
       }
     }
   }, []);
@@ -77,9 +75,5 @@ export function WebsocketProvider({ children }: any) {
     // eslint-disable-next-line
   }, []);
 
-  return (
-    <WebsocketContext.Provider value={{ queue, send }}>
-      {children}
-    </WebsocketContext.Provider>
-  );
+  return { queue, send };
 }
