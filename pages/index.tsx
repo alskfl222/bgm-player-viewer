@@ -6,7 +6,7 @@ import Now from '@/components/Now';
 import { useWebsocket } from '@/hooks/useWebsocket';
 
 export default function Home() {
-  const { queue, state, currentTime, send } = useWebsocket('viewer');
+  const { queue, currentTime, duration, isPlay, send } = useWebsocket('viewer');
   return (
     <>
       <Head>
@@ -21,8 +21,14 @@ export default function Home() {
 
       <div className='px-4 flex justify-center'>
         <div className='w-full max-w-[480px] p-2 flex flex-col items-center gap-4'>
-          <Now queue={queue} />
-          <RequestSong send={send} />
+          <Now
+            queue={queue}
+            currentTime={currentTime}
+            duration={duration}
+            isPlay={isPlay}
+            send={send}
+          />
+        <RequestSong send={send} />
           <List queue={queue} />
         </div>
       </div>

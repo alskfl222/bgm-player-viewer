@@ -9,7 +9,8 @@ export type Item = {
 
 export type WebsocketType = {
   queue: Item[];
-  state: "start" | "stop";
   currentTime: number;
+  duration: number;
+  isPlay: boolean;
   send: (eventName: string, data?: any) => void;
 };
