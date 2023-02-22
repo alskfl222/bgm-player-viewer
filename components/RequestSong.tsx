@@ -12,9 +12,6 @@ export default function RequestSong({ send }: Pick<WebsocketType, 'send'>) {
       send('append', { query, from: 'streamer' });
     }
   };
-  const onClickUpdate = (): void => {
-    send('update', { from: 'streamer' });
-  };
   const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter') {
       onClick();

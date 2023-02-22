@@ -30,7 +30,6 @@ export default function ProgressBar({
       </div>
       <div className='flex-none flex justify-between gap-4'>
         <span className='w-6'>{isPlay ? 'ON' : 'OFF'}</span>
-        <button className=''>다음</button>
       </div>
     </div>
   );
