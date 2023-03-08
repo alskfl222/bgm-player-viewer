@@ -9,7 +9,7 @@ export default function RequestSong({ send }: Pick<WebsocketType, 'send'>) {
   const onClick = (): void => {
     if (query) {
       setQuery('');
-      send('append', { query, from: 'streamer' });
+      send('append', { query, from: 'viewer' });
     }
   };
   const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>): void => {
