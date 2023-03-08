@@ -55,7 +55,7 @@ export function useWebsocket(sessionType: string): WebsocketType {
       }
       const playState = eventMsg === 'start' ? true : false;
       setQueue(data.queue);
-      setCurrentTime(Number(data.current_time));
+      setCurrentTime(Number(data.currentTime));
       if (duration === 0) setDuration(Number(data.duration));
       setIsPlay(playState);
     },
