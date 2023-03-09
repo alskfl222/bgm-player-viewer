@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Item, WebsocketType } from '@/types';
 
-const WS_SERVER_URL = process.env.NEXT_PUBLIC_CLOUD!
-// const WS_SERVER_URL = process.env.NEXT_PUBLIC_LOCAL!;
+// const WS_SERVER_URL = process.env.NEXT_PUBLIC_WS_LOCAL!;
+const WS_SERVER_URL = process.env.NEXT_PUBLIC_WS_CLOUD!;
 
 export function useWebsocket(sessionType: string): WebsocketType {
   const [queue, setQueue] = useState<Item[]>([
@@ -22,10 +22,10 @@ export function useWebsocket(sessionType: string): WebsocketType {
   const ws = useRef<WebSocket | null>(null);
 
   const send = useCallback(
-    (eventName: string, data?: any) => {
+    (name: string, data?: any) => {
       ws.current?.send(
         JSON.stringify({
-          event: { type: sessionType, name: `bgm.${eventName}`, id },
+          event: { from: sessionType, name, id },
           data: data ? data : queue[0],
         })
       );
@@ -33,9 +33,9 @@ export function useWebsocket(sessionType: string): WebsocketType {
     [sessionType, queue, id]
   );
 
-  const onOpen = useCallback((ev: Event) => {
+  const onOpen = useCallback(() => {
     console.log(`SERVER ${WS_SERVER_URL} connected`);
-    send('session');
+    send('session', {});
     // eslint-disable-next-line
   }, []);
 
@@ -45,15 +45,14 @@ export function useWebsocket(sessionType: string): WebsocketType {
 
   const onMessage = useCallback(
     (ev: MessageEvent<any>) => {
-      console.log('get message');
       const wsData = JSON.parse(ev.data);
       const { event, data } = wsData;
-      const eventMsg = event.message;
-      if (!eventMsg) {
-        setId(data.session_id);
+      const { to, name, message } = event;
+      if (name === 'session') {
+        setId(data.sessionId);
         return;
       }
-      const playState = eventMsg === 'start' ? true : false;
+      const playState = message === 'start' ? true : false;
       setQueue(data.queue);
       setCurrentTime(Number(data.currentTime));
       if (duration === 0) setDuration(Number(data.duration));
