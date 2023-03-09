@@ -54,11 +54,11 @@ export function useWebsocket(sessionType: string): WebsocketType {
       }
       const playState = message === 'start' ? true : false;
       setQueue(data.queue);
-      setCurrentTime(Number(data.currentTime));
+      if (currentTime === 0) setCurrentTime(Number(data.currentTime));
       if (duration === 0) setDuration(Number(data.duration));
       setIsPlay(playState);
     },
-    [duration]
+    [currentTime, duration]
   );
 
   const onError = useCallback((ev: Event) => {

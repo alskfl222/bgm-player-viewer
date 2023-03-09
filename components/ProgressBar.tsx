@@ -7,7 +7,7 @@ export default function ProgressBar({
   duration: number;
   isPlay: boolean;
 }) {
-  const formatTime = (time: number): string => {
+  const formatTime = (time: number = 0): string => {
     if (time === 0) return '0 : 00';
     return `${Math.floor(time / 60)} : ${Math.floor(time % 60)
       .toString()
