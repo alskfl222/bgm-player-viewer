@@ -8,6 +8,7 @@ export default function ProgressBar({
   isPlay: boolean;
 }) {
   const formatTime = (time: number): string => {
+    if (time === 0) return '0 : 00';
     return `${Math.floor(time / 60)} : ${Math.floor(time % 60)
       .toString()
       .padStart(2, '0')}`;
