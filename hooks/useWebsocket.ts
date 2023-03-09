@@ -47,16 +47,15 @@ export function useWebsocket(sessionType: string): WebsocketType {
     (ev: MessageEvent<any>) => {
       const wsData = JSON.parse(ev.data);
       const { event, data } = wsData;
-      const { to, name, message } = event;
+      const { to, name } = event;
       if (name === 'session') {
         setId(data.sessionId);
         return;
       }
-      const playState = message === 'start' ? true : false;
       setQueue(data.queue);
-      if (currentTime === 0) setCurrentTime(Number(data.currentTime));
-      if (duration === 0) setDuration(Number(data.duration));
-      setIsPlay(playState);
+      setIsPlay(data.bgm.active);
+      if (currentTime === 0) setCurrentTime(Number(data.bgm.currentTime));
+      if (duration === 0) setDuration(Number(data.bgm.duration));
     },
     [currentTime, duration]
   );
