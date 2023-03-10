@@ -55,7 +55,7 @@ export default function Now({
     <>
       {show && (
         <div className='fixed top-0 w-screen p-4 flex justify-center bg-neutral-300'>
-          <div className='w-[480px] p-2 flex flex-col justify-center items-center gap-2'>
+          <div className='w-screen max-w-[480px] p-2 flex flex-col justify-center items-center gap-2'>
             <div className='w-full flex justify-between items-center'>
               <div className='font-bold whitespace-nowrap text-ellipsis overflow-hidden'>
                 <a
